@@ -1,0 +1,121 @@
+@prefix : <http://www.example.org/factory#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+#####################
+# Classi
+#####################
+
+:Part rdf:type owl:Class .
+:Component rdf:type owl:Class ; rdfs:subClassOf :Part .
+:ComplexComponent rdf:type owl:Class ; rdfs:subClassOf :Component .
+
+:Technician rdf:type owl:Class .
+:Senior rdf:type owl:Class ; rdfs:subClassOf :Technician .
+:Junior rdf:type owl:Class ; rdfs:subClassOf :Technician .
+:Specialist rdf:type owl:Class ; rdfs:subClassOf :Technician .
+
+:Department rdf:type owl:Class .
+:Warehouse rdf:type owl:Class ; rdfs:subClassOf :Department .
+:TestArea rdf:type owl:Class ; rdfs:subClassOf :Department .
+:Area_A rdf:type owl:Class ; rdfs:subClassOf :Department .
+:Area_B rdf:type owl:Class ; rdfs:subClassOf :Department .
+
+:Engine rdf:type owl:Class .
+:Task rdf:type owl:Class .
+:Sensor rdf:type owl:Class .
+
+#####################
+# Proprietà degli oggetti
+#####################
+
+:partOf rdf:type owl:ObjectProperty ; rdfs:domain :Component ; rdfs:range :Engine .
+:locatedIn rdf:type owl:ObjectProperty ; rdfs:domain :Engine ; rdfs:range :Department .
+:hasSkill rdf:type owl:ObjectProperty ; rdfs:domain :Technician ; rdfs:range :Department .
+:hasLevel rdf:type owl:ObjectProperty ; rdfs:domain :Technician ; rdfs:range :Technician .
+:requiresPart rdf:type owl:ObjectProperty ; rdfs:domain :Task ; rdfs:range :Component .
+:assignedTo rdf:type owl:ObjectProperty ; rdfs:domain :Task ; rdfs:range :Technician .
+:requiresTest rdf:type owl:ObjectProperty ; rdfs:domain :Task ; rdfs:range :TestArea .
+:requiresWarehouseStop rdf:type owl:ObjectProperty ; rdfs:domain :Task ; rdfs:range :Warehouse .
+:stores rdf:type owl:ObjectProperty ; rdfs:domain :Warehouse ; rdfs:range :Component .
+:monitors rdf:type owl:ObjectProperty ; rdfs:domain :Sensor ; rdfs:range :Engine .
+
+#####################
+# Individui
+#####################
+
+# Engines
+:unit_1 rdf:type :Engine .
+:unit_2 rdf:type :Engine .
+
+# Departments
+:Area_A_Ind rdf:type :Area_A .
+:Area_B_Ind rdf:type :Area_B .
+:Warehouse_Ind rdf:type :Warehouse .
+:Test_Area_Ind rdf:type :TestArea .
+
+# Components
+:hpc rdf:type :ComplexComponent .
+:hpt rdf:type :ComplexComponent .
+:lpt rdf:type :ComplexComponent .
+:shaft rdf:type :ComplexComponent .
+:fan rdf:type :Component .
+:injector rdf:type :Component .
+:pressure_sensor rdf:type :Component .
+:lpc rdf:type :Component .
+:oil_pump rdf:type :Component .
+
+# Sensors
+:pressure_sensor1 rdf:type :Sensor .
+
+# Technicians
+:Tech1 rdf:type :Senior .
+:Tech2 rdf:type :Junior .
+:Tech3 rdf:type :Specialist .
+
+# Tasks
+:T1 rdf:type :Task .
+:T2 rdf:type :Task .
+:T3 rdf:type :Task .
+:T4 rdf:type :Task .
+:T5 rdf:type :Task .
+
+#####################
+# Relazioni tra individui
+#####################
+
+# Engines in Departments
+:unit_1 :locatedIn :Area_A_Ind .
+:unit_2 :locatedIn :Area_B_Ind .
+
+# Components part of Engines
+:hpc :partOf :unit_1 .
+:hpt :partOf :unit_1 .
+:fan :partOf :unit_1 .
+:injector :partOf :unit_1 .
+:pressure_sensor :partOf :unit_1 .
+:lpc :partOf :unit_2 .
+:lpt :partOf :unit_2 .
+:oil_pump :partOf :unit_2 .
+:shaft :partOf :unit_2 .
+
+# Warehouse stores Components
+:Warehouse_Ind :stores :hpc, :hpt, :lpt, :shaft, :fan, :injector, :pressure_sensor, :lpc, :oil_pump .
+
+# Technicians skills and levels
+:Tech1 :hasSkill :Area_A_Ind, :Area_B_Ind, :Test_Area_Ind .
+:Tech2 :hasSkill :Area_A_Ind, :Area_B_Ind .
+:Tech3 :hasSkill :Test_Area_Ind .
+
+# Sensors monitor Engines
+:pressure_sensor1 :monitors :unit_1 .
+
+# Tasks requirements (esempio)
+:T1 :requiresPart :hpc ; :assignedTo :Tech1 ; :requiresTest :Test_Area_Ind ; :requiresWarehouseStop :Warehouse_Ind .
+:T2 :requiresPart :lpt ; :assignedTo :Tech2 ; :requiresTest :Test_Area_Ind ; :requiresWarehouseStop :Warehouse_Ind .
+:T3 :requiresPart :fan ; :assignedTo :Tech1 ; :requiresWarehouseStop :Warehouse_Ind .
+:T4 :requiresPart :injector ; :assignedTo :Tech2 .
+:T5 :requiresPart :oil_pump ; :assignedTo :Tech3 ; :requiresTest :Test_Area_Ind .
